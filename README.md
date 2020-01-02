@@ -1,7 +1,13 @@
 # LocationTracker-lt
 This repo is containing only the docker-compose.yaml file to run all the micro-services project
 
-##RUN IN SEQUENCE for RUNNING DOCKERS LOCALLY (WITHOUT YAML):
+## RUN docker-compose.yaml file (for running all the container together):
+```
+> docker-compose up -d
+
+```
+
+## RUN IN SEQUENCE for RUNNING DOCKERS LOCALLY (WITHOUT YAML):
 1. docker run -d -p 8161:8161 -p 61616:61616 --name myqueue --network locationtracker guptavinodkumar/lt-activemq:0.0.1-RELEASE
 
 2. docker run -d --network locationtracker --env spring.activemq.broker-url=tcp://myqueue:61616 --env fleetman.position.queue=positionQueue guptavinodkumar/lt-position-simulator:0.0.1-RELEASE
