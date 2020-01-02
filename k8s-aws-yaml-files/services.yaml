@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tracker-webapp
+
+spec:
+  # This defines which pods are going to be represented by this Service
+  # The service becomes a network endpoint for either other services
+  # or maybe external users to connect to (eg browser)
+  selector:
+    app: lt-webapp
+
+  ports:
+    - name: http
+      port: 80
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myqueue-service
+
+spec:
+  # This defines which pods are going to be represented by this Service
+  # The service becomes a network endpoint for either other services
+  # or maybe external users to connect to (eg browser)
+  selector:
+    app: lt-activemq
+
+  ports:
+    - name: http
+      port: 8161
+
+    - name: endpoint
+      port: 61616
+
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: positiontracker-service
+
+spec:
+  # This defines which pods are going to be represented by this Service
+  # The service becomes a network endpoint for either other services
+  # or maybe external users to connect to (eg browser)
+  selector:
+    app: lt-position-tracker
+
+  ports:
+    - name: http
+      port: 8090
+
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apigateway
+
+spec:
+  # This defines which pods are going to be represented by this Service
+  # The service becomes a network endpoint for either other services
+  # or maybe external users to connect to (eg browser)
+  selector:
+    app: lt-api-gateway
+
+  ports:
+    - name: http
+      port: 8080
+
+  type: LoadBalancer

@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: activmqueue
+spec:
+  selector:
+    matchLabels:
+      app: lt-activemq
+  replicas: 1
+  template: # template for the pods
+    metadata:
+      labels:
+        app: lt-activemq
+    spec:
+      containers:
+      - name: lt-activemq
+        image: mooneshkachroo/lt-activemq:0.0.1-RELEASE
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: position-simulator
+spec:
+  selector:
+    matchLabels:
+      app: lt-position-simulator
+  replicas: 1
+  template: # template for the pods
+    metadata:
+      labels:
+        app: lt-position-simulator
+    spec:
+      containers:
+      - name: positionsimulator
+        image: mooneshkachroo/lt-position-simulator:0.0.1-RELEASE
+        env:
+        - name: spring.activemq.broker-url
+          value: tcp://myqueue:61616
+        - name: fleetman.position.queue
+          value: positionQueue
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myqueue
+
+spec:
+  # This defines which pods are going to be represented by this Service
+  # The service becomes a network endpoint for either other services
+  # or maybe external users to connect to (eg browser)
+  selector:
+    app: lt-activemq
+
+  ports:
+    - name: http
+      port: 8161
+
+    - name: endpoint
+      port: 61616
+
+  type: LoadBalancer

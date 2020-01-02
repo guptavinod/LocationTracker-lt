@@ -1,0 +1,111 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: activmqueue
+spec:
+  selector:
+    matchLabels:
+      app: lt-activemq
+  replicas: 1
+  template: # template for the pods
+    metadata:
+      labels:
+        app: lt-activemq
+    spec:
+      containers:
+      - name: activemq-container
+        image: mooneshkachroo/lt-activemq:0.0.1-RELEASE
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: position-simulator
+spec:
+  selector:
+    matchLabels:
+      app: lt-position-simulator
+  replicas: 1
+  template: # template for the pods
+    metadata:
+      labels:
+        app: lt-position-simulator
+    spec:
+      containers:
+      - name: positionsimulator-container
+        image: mooneshkachroo/lt-position-simulator:0.0.1-RELEASE
+        env:
+        - name: spring.activemq.broker-url
+          value: tcp://myqueue-service:61616
+        - name: fleetman.position.queue
+          value: positionQueue
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: positiontracker
+spec:
+  selector:
+    matchLabels:
+      app: lt-position-tracker
+  replicas: 1
+  template: # template for the pods
+    metadata:
+      labels:
+        app: lt-position-tracker
+    spec:
+      containers:
+      - name: positiontracker-container
+        image: mooneshkachroo/lt-position-tracker:0.0.1-RELEASE
+        env:
+        - name: spring.activemq.broker-url
+          value: tcp://myqueue-service:61616
+        - name: fleetman.position.queue
+          value: positionQueue
+        - name: spring.data.mongodb.host
+          value: mongo-service
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+spec:
+  selector:
+    matchLabels:
+      app: lt-api-gateway
+  replicas: 1
+  template: # template for the pods
+    metadata:
+      labels:
+        app: lt-api-gateway
+    spec:
+      containers:
+      - name: api-gateway-container
+        image: mooneshkachroo/lt-api-gateway:0.0.1-RELEASE
+        env:
+        - name: position-tracker-url
+          value: http://positiontracker-service:8090
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: angularwebapp
+spec:
+  selector:
+    matchLabels:
+      app: lt-webapp
+  replicas: 1
+  template: # template for the pods
+    metadata:
+      labels:
+        app: lt-webapp
+    spec:
+      containers:
+      - name: webapp-container
+        image: mooneshkachroo/lt-webapp:0.0.1-RELEASE
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: production-microservice
+
+
