@@ -33,3 +33,25 @@ https://docs.google.com/document/d/1fb3k7rgK9HFWktL-R43pwTbXQUGxsZi7pmHA0By-quQ/
 2. The folder yaml-files contains all the yaml documents requiered to build pods/servcies.
 3. Ignore test.yaml (that was only for testing a piece of microservices)
 
+## 3.1. Architecture of K8S:
+
+![k8s_Architecture.png](k8s_Architecture.png)
+
+**COMPONENTS:**
+
+MASTER NODE:
+
+  - API Server: Exposes APIS for all the operations in K8s. For interaction either use kubectl or K8s UI
+  - Scheduler: Physically schedules pods across multiple nodes - basis the configurations provided (like CPU,Memory,Instance Type etc)
+  - etcd : Distributed ligthweight Key-Value Db. Containing current state of Clusterat any point of time. It is Single Source of Truth
+  - Controller Manager : Responsible for health of entire cluster. Actually 4 backing cotrollers -
+      - Node Controller
+      - Replication Controller
+      - Endpoint Controller
+      - Service Account and Token Controller
+
+WORKER NODE:
+
+  - Kubelet: Primary Node Agent that runs on each Worker Node. It looks at the Pod Spec(YAML) and ensures that cotainers described are healthy and running.
+  - Kube Proxy: Responsible for mainting all network configurations -across all pods/nodes. Also exposes services to outside world.
+  - Pods & Containers
